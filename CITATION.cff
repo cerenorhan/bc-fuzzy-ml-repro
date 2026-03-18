@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: "bc-fuzzy-ml-repro"
+message: "If you use this code, please cite it."
+type: software
+authors:
+  - family-names: Orhan
+    given-names: Ceren
+license: MIT
+repository-code: "https://github.com/cerenorhan/bc-fuzzy-ml-repro"
