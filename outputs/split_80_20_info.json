@@ -1,0 +1,15 @@
+{
+  "n_total":260,
+  "n_train":208,
+  "n_test":52,
+  "stage2_train_counts":{
+    "0":10,
+    "1":31,
+    "2":167
+  },
+  "stage2_test_counts":{
+    "0":3,
+    "1":8,
+    "2":41
+  }
+}

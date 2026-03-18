@@ -1,0 +1,5 @@
+target,model,accuracy,weighted_f1
+stage2,fuzzy,0.05,0.0058823529411764705
+diagnosis,fuzzy,0.15,0.24545454545454548
+laterality,fuzzy,0.6,0.5238095238095238
+ihc,fuzzy,0.45,0.327037037037037
