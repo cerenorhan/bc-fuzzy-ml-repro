@@ -1,4 +1,4 @@
-PATIENT ID,Stage2_labelprop,confidence,high_confidence
+PATIENT ID,Stage_labelprop,confidence,high_confidence
 A-P-053,III-IV,1.0,True
 H-P-006,III-IV,1.0,True
 H-P-037,III-IV,1.0,True

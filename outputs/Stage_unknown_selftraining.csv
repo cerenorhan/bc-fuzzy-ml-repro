@@ -1,4 +1,4 @@
-PATIENT ID,Stage2_pseudolabel,confidence,high_confidence
+PATIENT ID,Stage_pseudolabel,confidence,high_confidence
 R-P-081,III-IV,0.7908,False
 H-P-042,III-IV,0.7397,False
 A-P-053,I-II,0.7315,False

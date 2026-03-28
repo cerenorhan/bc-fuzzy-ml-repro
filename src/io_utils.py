@@ -16,13 +16,17 @@ def load_xy():
 
     X = df[X_COLS].astype(float).to_numpy()
 
-    # Stage2 numeric
-    y_stage2 = df[Y_STAGE2_STR_COL].astype(str).map(STAGE2_MAP).fillna(0.0).astype(float).to_numpy()
+    # Stage (binary) numeric
+    stage_str = df['Stage_2grp'].astype(str).str.strip().str.replace('–','-').str.replace('—','-')
+y_stage = stage_str.map({'I-II': 0.0, 'III-IV': 1.0}).astype(float)
+# Unknown/missing stays as NaN; handled downstream
+y_stage = y_stage.to_numpy()
+
 
     # Other outputs already numeric (0..1)
     y_diag = df[Y_DIAG_COL].astype(float).to_numpy()
     y_lat  = df[Y_LAT_COL].astype(float).to_numpy()
     y_ihc  = df[Y_IHC_COL].astype(float).to_numpy()
 
-    Y = np.column_stack([y_stage2, y_diag, y_lat, y_ihc])
+    Y = np.column_stack([y_stage, y_diag, y_lat, y_ihc])
     return df, X, Y

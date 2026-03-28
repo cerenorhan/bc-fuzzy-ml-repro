@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-ml = pd.read_csv("outputs/metrics_test_ml_80_20_repeats_summary_v2metrics.csv")
-fz = pd.read_csv("outputs/metrics_test_fuzzy_80_20_repeats_summary_v2metrics.csv")
+ml = pd.read_csv("outputs/ML_summary.csv")
+fz = pd.read_csv("outputs/Fuzzy_summary.csv")
 
 def get_mean_std(df, metric):
     cols = df.columns.tolist()
@@ -76,8 +76,8 @@ for i in range(vals.shape[0]):
 
 plt.title("Model performance comparison (Weighted F1-score; mean across 5 repeats)")
 plt.tight_layout()
-plt.savefig(outdir / "Fig1c_heatmap_weightedF1_annot.png", dpi=300)
-plt.savefig(outdir / "Fig1c_heatmap_weightedF1_annot.pdf")
+plt.savefig(outdir / "Fig1_heatmap.png", dpi=300)
+plt.savefig(outdir / "Fig1_heatmap.pdf")
 plt.close()
 
 # ---------- Fig2c: grouped bars per target ----------
@@ -116,8 +116,8 @@ ax.set_ylabel("Weighted F1-score (mean ± SD)")
 ax.set_title("Per endpoint: best machine-learning model vs fuzzy-logic baseline")
 ax.legend(frameon=True)
 plt.tight_layout()
-plt.savefig(outdir / "Fig2c_grouped_bars.png", dpi=300)
-plt.savefig(outdir / "Fig2c_grouped_bars.pdf")
+plt.savefig(outdir / "Fig2_grouped_bars.png", dpi=300)
+plt.savefig(outdir / "Fig2_grouped_bars.pdf")
 plt.close()
 
 # ---------- Fig3c: scatter (balanced accuracy vs weighted F1-score) ----------
@@ -144,8 +144,8 @@ plt.xlabel("Weighted F1-score (mean)")
 plt.ylabel("Balanced accuracy (mean)")
 plt.title("Balanced accuracy vs Weighted F1-score (marker indicates endpoint)")
 plt.tight_layout()
-plt.savefig(outdir / "Fig3c_scatter_bacc_vs_wf1.png", dpi=300)
-plt.savefig(outdir / "Fig3c_scatter_bacc_vs_wf1.pdf")
+plt.savefig(outdir / "Fig3_scatter.png", dpi=300)
+plt.savefig(outdir / "Fig3_scatter.pdf")
 plt.close()
 
 print("Wrote academic-style figures (Fig1c/Fig2c/Fig3c) to outputs/figures/")
