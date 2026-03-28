@@ -16,20 +16,20 @@ from .metrics_utils import (
 )
 from .ml_models import get_models, to_class
 
-TARGETS = ["stage2", "diagnosis", "laterality", "ihc"]
+TARGETS = ["stage", "diagnosis", "laterality", "ihc"]
 
 def centers_from_train(y):
     c = np.unique(y.astype(float))
     return np.sort(c).tolist()
 
-def normalize_stage2(s: str) -> str:
+def normalize_stage(s: str) -> str:
     s = str(s).strip()
     # normalize unicode dashes
     s = s.replace("–", "-").replace("—", "-")
     return s
 
-def stage2_binary_from_str(series: pd.Series):
-    s = series.astype(str).map(normalize_stage2)
+def stage_binary_from_str(series: pd.Series):
+    s = series.astype(str).map(normalize_stage)
     is_unknown = s.str.lower().eq("unknown") | s.str.lower().eq("nan") | s.eq("")
     # binary labels: I-II -> 0, III-IV -> 1
     y = pd.Series(np.nan, index=s.index, dtype=float)
@@ -42,15 +42,15 @@ def stage2_binary_from_str(series: pd.Series):
 def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
     # -----------------------------
     # Split strategy:
-    # 1) Split ONLY known stage2 samples stratified (binary)
-    # 2) Assign unknown stage2 samples randomly to train/test to preserve ratio
+    # 1) Split ONLY known stage samples stratified (binary)
+    # 2) Assign unknown stage samples randomly to train/test to preserve ratio
     # -----------------------------
-    y_stage2_bin, is_unknown = stage2_binary_from_str(df["Stage_2grp"])
+    y_stage_bin, is_unknown = stage_binary_from_str(df["Stage_2grp"])
 
     known_idx = np.where(~is_unknown.to_numpy())[0]
     unk_idx   = np.where(is_unknown.to_numpy())[0]
 
-    y_known = y_stage2_bin.iloc[known_idx].astype(int).to_numpy()
+    y_known = y_stage_bin.iloc[known_idx].astype(int).to_numpy()
 
     tr_known, te_known = train_test_split(
         known_idx,
@@ -60,7 +60,7 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
         stratify=y_known
     )
 
-    # Randomly allocate unknown stage2 samples to train/test
+    # Randomly allocate unknown stage samples to train/test
     rng = np.random.default_rng(seed)
     unk_perm = rng.permutation(unk_idx)
     n_te_unk = int(round(test_size * len(unk_idx)))
@@ -75,7 +75,7 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
 
     # Build centers for non-stage outputs from TRAIN (as before)
     centers_map = {
-        # stage2 handled separately (binary)
+        # stage handled separately (binary)
         "diagnosis": centers_from_train(Ytr[:, 1]),
         "laterality": centers_from_train(Ytr[:, 2]),
         "ihc": centers_from_train(Ytr[:, 3]),
@@ -88,7 +88,7 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
     stage_rows_ml = []
     unknown_pred_rows = []
 
-    # stage2: prepare train/eval masks inside this split
+    # stage: prepare train/eval masks inside this split
     is_unknown_split = is_unknown.to_numpy()
     tr_stage = np.intersect1d(train_idx, known_idx)
     te_stage = np.intersect1d(test_idx, known_idx)
@@ -96,25 +96,25 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
     Xtr_s = X[tr_stage]
     Xte_s = X[te_stage]
 
-    ytr_s = y_stage2_bin.iloc[tr_stage].astype(float).to_numpy()
-    yte_s = y_stage2_bin.iloc[te_stage].astype(float).to_numpy()
+    ytr_s = y_stage_bin.iloc[tr_stage].astype(float).to_numpy()
+    yte_s = y_stage_bin.iloc[te_stage].astype(float).to_numpy()
 
     # Define binary centers [0,1]
     STAGE2_BIN_CENTERS = [0.0, 1.0]
 
-    # FUZZY stage2 (train only known)
+    # FUZZY stage (train only known)
     # For fuzzy we keep numeric y in {0,1} and treat it as classification via centers.
     in_mfs, out_mfs, rules = wang_mendel_train(Xtr_s, ytr_s.reshape(-1,1), max_rules=MAX_RULES)
     yhat_s = mamdani_predict(Xte_s, in_mfs, out_mfs, rules)[:, 0]
     acc, wf1, mf1, bacc, _ = eval_target(yte_s, yhat_s, STAGE2_BIN_CENTERS)
     stage_rows_fuzzy.append({
-        "seed": seed, "target": "stage2", "model": "fuzzy",
+        "seed": seed, "target": "stage", "model": "fuzzy",
         "accuracy": acc, "weighted_f1": wf1, "macro_f1": mf1, "balanced_acc": bacc
     })
 
-    # ML stage2 (binary)
+    # ML stage (binary)
     ml_models = get_models(seed=seed)
-    # We will use logreg/svm/rf/gb variants already included; for stage2 use binary y
+    # We will use logreg/svm/rf/gb variants already included; for stage use binary y
     ytr_cls = ytr_s.astype(int)
     yte_cls = yte_s.astype(int)
 
@@ -127,12 +127,12 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
         bacc_m = balanced_accuracy_from_confusion(C)
         acc_m = float((pred == yte_cls).mean())
         stage_rows_ml.append({
-            "seed": seed, "target": "stage2", "model": model_name,
+            "seed": seed, "target": "stage", "model": model_name,
             "accuracy": acc_m, "weighted_f1": wf1_m, "macro_f1": mf1_m, "balanced_acc": bacc_m
         })
 
     # -----------------------------
-    # Predict stage2 for Unknown (no evaluation)
+    # Predict stage for Unknown (no evaluation)
     # -----------------------------
     # Use best-weightedF1 primary model choice: logreg (stable) as default
     # Train on known-train only, predict unknowns in this split
@@ -149,7 +149,7 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
         tmp = pd.DataFrame({
             "seed": seed,
             "PATIENT ID": df.loc[unk_in_test, "PATIENT ID"].values,
-            "Stage2_predicted": lab,
+            "Stage_predicted": lab,
             "confidence": np.round(conf, 4),
             "high_confidence": conf >= conf_thr
         })
@@ -205,13 +205,13 @@ def run_one_split(df, X, Y, seed, test_size=0.20, conf_thr=0.80):
     split_info = {
         "seed": seed,
         "n_total": len(df),
-        "n_known_stage2": int(len(known_idx)),
-        "n_unknown_stage2": int(len(unk_idx)),
+        "n_known_stage": int(len(known_idx)),
+        "n_unknown_stage": int(len(unk_idx)),
         "n_train_total": int(len(train_idx)),
         "n_test_total": int(len(test_idx)),
-        "n_train_known_stage2": int(len(tr_stage)),
-        "n_test_known_stage2": int(len(te_stage)),
-        "n_test_unknown_stage2": int(len(unk_in_test)),
+        "n_train_known_stage": int(len(tr_stage)),
+        "n_test_known_stage": int(len(te_stage)),
+        "n_test_unknown_stage": int(len(unk_in_test)),
     }
 
     return fz_df, ml_df, unk_df, split_info
@@ -247,26 +247,26 @@ def main():
     split_df = pd.DataFrame(split_infos)
 
     # Overwrite same filenames to keep pipeline stable
-    fz_df.to_csv(outdir / "metrics_test_fuzzy_80_20_repeats_v2metrics.csv", index=False)
-    ml_df.to_csv(outdir / "metrics_test_ml_80_20_repeats_v2metrics.csv", index=False)
+    fz_df.to_csv(outdir / "Fuzzy_detailed.csv", index=False)
+    ml_df.to_csv(outdir / "ML_detailed.csv", index=False)
 
     fz_sum = summarize(fz_df)
     ml_sum = summarize(ml_df)
 
-    fz_sum.to_csv(outdir / "metrics_test_fuzzy_80_20_repeats_summary_v2metrics.csv", index=False)
-    ml_sum.to_csv(outdir / "metrics_test_ml_80_20_repeats_summary_v2metrics.csv", index=False)
+    fz_sum.to_csv(outdir / "Fuzzy_summary.csv", index=False)
+    ml_sum.to_csv(outdir / "ML_summary.csv", index=False)
 
-    split_df.to_csv(outdir / "split_80_20_repeats_info.csv", index=False)
+    split_df.to_csv(outdir / "Split_info.csv", index=False)
 
-    # Unknown stage2 predictions (exploratory; no metrics)
+    # Unknown stage predictions (exploratory; no metrics)
     if len(unk_df):
-        unk_df.to_csv(outdir / "predicted_stage2_for_unknown_repeats.csv", index=False)
+        unk_df.to_csv(outdir / "predicted_stage_for_unknown_repeats.csv", index=False)
 
-    print("Done. Updated run_80_20_repeat_v2metrics with binary Stage2 (Unknown treated as missing).")
+    print("Done. Updated run_benchmark with binary Stage (Unknown treated as missing).")
     print("- outputs/metrics_test_*_repeats_v2metrics.csv (+ summary) updated")
-    print("- outputs/split_80_20_repeats_info.csv written")
+    print("- outputs/Split_info.csv written")
     if len(unk_df):
-        print("- outputs/predicted_stage2_for_unknown_repeats.csv written (secondary; not used as ground truth)")
+        print("- outputs/predicted_stage_for_unknown_repeats.csv written (secondary; not used as ground truth)")
 
 if __name__ == "__main__":
     main()

@@ -31,9 +31,9 @@ outdir = Path("outputs/figures")
 outdir.mkdir(parents=True, exist_ok=True)
 
 # --- Professional display labels ---
-target_order = ["stage2","diagnosis","laterality","ihc"]
+target_order = ["stage","diagnosis","laterality","ihc"]
 target_label = {
-    "stage2": "Stage",
+    "stage": "Stage",
     "diagnosis": "Diagnosis",
     "laterality": "Laterality",
     "ihc": "IHC",
@@ -57,7 +57,7 @@ def pretty_targets(xs):
 def pretty_models(xs):
     return [model_label.get(x, x) for x in xs]
 
-# ---------- Fig1c: heatmap with numbers ----------
+# ---------- Fig1: heatmap with numbers ----------
 pivot = (all_df.pivot_table(index="target", columns="model", values=wf1_mean, aggfunc="first")
            .reindex(index=target_order, columns=model_order))
 vals = pivot.values
@@ -80,7 +80,7 @@ plt.savefig(outdir / "Fig1_heatmap.png", dpi=300)
 plt.savefig(outdir / "Fig1_heatmap.pdf")
 plt.close()
 
-# ---------- Fig2c: grouped bars per target ----------
+# ---------- Fig2: grouped bars per target ----------
 rows = []
 for t in target_order:
     sub = all_df[all_df["target"]==t].copy()
@@ -120,8 +120,8 @@ plt.savefig(outdir / "Fig2_grouped_bars.png", dpi=300)
 plt.savefig(outdir / "Fig2_grouped_bars.pdf")
 plt.close()
 
-# ---------- Fig3c: scatter (balanced accuracy vs weighted F1-score) ----------
-marker_map = {"stage2":"o","diagnosis":"s","laterality":"^","ihc":"D"}
+# ---------- Fig3: scatter (balanced accuracy vs weighted F1-score) ----------
+marker_map = {"stage":"o","diagnosis":"s","laterality":"^","ihc":"D"}
 
 plt.figure(figsize=(7.3, 5.2))
 for model in model_order:
@@ -148,4 +148,4 @@ plt.savefig(outdir / "Fig3_scatter.png", dpi=300)
 plt.savefig(outdir / "Fig3_scatter.pdf")
 plt.close()
 
-print("Wrote academic-style figures (Fig1c/Fig2c/Fig3c) to outputs/figures/")
+print("Wrote final figures (Fig1/Fig2/Fig3) to outputs/figures/")
