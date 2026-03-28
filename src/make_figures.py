@@ -30,37 +30,59 @@ for c in [wf1_mean, wf1_sd, mf1_mean, mf1_sd, bacc_mean, bacc_sd]:
 outdir = Path("outputs/figures")
 outdir.mkdir(parents=True, exist_ok=True)
 
-targets = ["stage2","diagnosis","laterality","ihc"]
-models_order = ["fuzzy","gb","logreg","logreg_bal","rf","svm_rbf","svm_rbf_bal"]
+# --- Professional display labels ---
+target_order = ["stage2","diagnosis","laterality","ihc"]
+target_label = {
+    "stage2": "Stage",
+    "diagnosis": "Diagnosis",
+    "laterality": "Laterality",
+    "ihc": "IHC",
+}
 
-# ---------- Fig1b: heatmap with numbers ----------
+# Model display names (short but academic)
+model_order = ["fuzzy","gb","logreg","logreg_bal","rf","svm_rbf","svm_rbf_bal"]
+model_label = {
+    "fuzzy": "Fuzzy logic",
+    "gb": "Gradient boosting",
+    "logreg": "Logistic regression",
+    "logreg_bal": "Logistic regression (balanced)",
+    "rf": "Random forest",
+    "svm_rbf": "SVM (RBF)",
+    "svm_rbf_bal": "SVM (RBF, balanced)",
+}
+
+def pretty_targets(xs):
+    return [target_label.get(x, x) for x in xs]
+
+def pretty_models(xs):
+    return [model_label.get(x, x) for x in xs]
+
+# ---------- Fig1c: heatmap with numbers ----------
 pivot = (all_df.pivot_table(index="target", columns="model", values=wf1_mean, aggfunc="first")
-           .reindex(index=targets, columns=models_order))
+           .reindex(index=target_order, columns=model_order))
 vals = pivot.values
 
-plt.figure(figsize=(11, 3.6))
+plt.figure(figsize=(12.5, 3.8))
 im = plt.imshow(vals, aspect="auto")
-plt.xticks(range(pivot.shape[1]), pivot.columns, rotation=35, ha="right")
-plt.yticks(range(pivot.shape[0]), pivot.index)
-plt.colorbar(im, label="weighted-F1 (mean)")
+plt.xticks(range(pivot.shape[1]), pretty_models(pivot.columns), rotation=30, ha="right")
+plt.yticks(range(pivot.shape[0]), pretty_targets(pivot.index))
+plt.colorbar(im, label="Weighted F1-score (mean)")
 
-# annotate cells
 for i in range(vals.shape[0]):
     for j in range(vals.shape[1]):
         v = vals[i, j]
         if np.isfinite(v):
             plt.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=8)
 
-plt.title("Model comparison (weighted-F1 mean ± across 5 repeats; stratified 80/20)")
+plt.title("Model performance comparison (Weighted F1-score; mean across 5 repeats)")
 plt.tight_layout()
-plt.savefig(outdir / "Fig1b_heatmap_weightedF1_annot.png", dpi=300)
-plt.savefig(outdir / "Fig1b_heatmap_weightedF1_annot.pdf")
+plt.savefig(outdir / "Fig1c_heatmap_weightedF1_annot.png", dpi=300)
+plt.savefig(outdir / "Fig1c_heatmap_weightedF1_annot.pdf")
 plt.close()
 
-# ---------- Fig2b: grouped bars per target ----------
-# pick: best by weighted-F1, best by macro-F1, plus fuzzy
+# ---------- Fig2c: grouped bars per target ----------
 rows = []
-for t in targets:
+for t in target_order:
     sub = all_df[all_df["target"]==t].copy()
     fuzzy = sub[sub["model"]=="fuzzy"].copy()
     nonfz = sub[sub["model"]!="fuzzy"].copy()
@@ -68,57 +90,62 @@ for t in targets:
     best_w = nonfz.sort_values(wf1_mean, ascending=False).head(1)
     best_m = nonfz.sort_values(mf1_mean, ascending=False).head(1)
 
-    best_w["pick"] = "best_weightedF1"
-    best_m["pick"] = "best_macroF1"
+    best_w["pick"] = "Best (weighted F1-score)"
+    best_m["pick"] = "Best (macro F1-score)"
     if len(fuzzy):
-        fuzzy["pick"] = "fuzzy"
+        fuzzy["pick"] = "Fuzzy logic"
 
     rows.append(pd.concat([best_w, best_m, fuzzy], ignore_index=True))
 sel = pd.concat(rows, ignore_index=True)
-
-# make a consistent order
-pick_order = ["best_weightedF1","best_macroF1","fuzzy"]
+pick_order = ["Best (weighted F1-score)", "Best (macro F1-score)", "Fuzzy logic"]
 sel["pick"] = pd.Categorical(sel["pick"], categories=pick_order, ordered=True)
 
-fig, ax = plt.subplots(figsize=(10, 4))
-x = np.arange(len(targets))
+fig, ax = plt.subplots(figsize=(10.5, 4.2))
+x = np.arange(len(target_order))
 width = 0.25
 
 for k, pick in enumerate(pick_order):
-    part = sel[sel["pick"]==pick].set_index("target").reindex(targets)
+    part = sel[sel["pick"]==pick].set_index("target").reindex(target_order)
     y = part[wf1_mean].to_numpy()
     e = part[wf1_sd].to_numpy()
     ax.bar(x + (k-1)*width, y, width, yerr=e, capsize=3, label=pick)
 
 ax.set_xticks(x)
-ax.set_xticklabels(targets)
-ax.set_ylabel("weighted-F1 (mean ± SD)")
-ax.set_title("Per target: best weighted-F1 ML vs best macro-F1 ML vs fuzzy")
+ax.set_xticklabels(pretty_targets(target_order))
+ax.set_ylabel("Weighted F1-score (mean ± SD)")
+ax.set_title("Per endpoint: best machine-learning model vs fuzzy-logic baseline")
 ax.legend(frameon=True)
 plt.tight_layout()
-plt.savefig(outdir / "Fig2b_grouped_bars.png", dpi=300)
-plt.savefig(outdir / "Fig2b_grouped_bars.pdf")
+plt.savefig(outdir / "Fig2c_grouped_bars.png", dpi=300)
+plt.savefig(outdir / "Fig2c_grouped_bars.pdf")
 plt.close()
 
-# ---------- Fig3b: scatter with target markers ----------
+# ---------- Fig3c: scatter (balanced accuracy vs weighted F1-score) ----------
 marker_map = {"stage2":"o","diagnosis":"s","laterality":"^","ihc":"D"}
 
-plt.figure(figsize=(7,5))
-for model in models_order:
-    sub = all_df[all_df["model"]==model]
-    for t in targets:
-        ss = sub[sub["target"]==t]
+plt.figure(figsize=(7.3, 5.2))
+for model in model_order:
+    subm = all_df[all_df["model"]==model]
+    for t in target_order:
+        ss = subm[subm["target"]==t]
         if len(ss)==0:
             continue
-        plt.scatter(ss[wf1_mean], ss[bacc_mean], marker=marker_map[t], s=70, label=f"{model} ({t})")
+        plt.scatter(ss[wf1_mean], ss[bacc_mean], marker=marker_map[t], s=70)
 
-plt.xlabel("weighted-F1 (mean)")
-plt.ylabel("balanced accuracy (mean)")
-plt.title("Balanced accuracy vs weighted-F1 (marker=target)")
-plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left", fontsize=7)
+# build two legends: targets and model family (short)
+from matplotlib.lines import Line2D
+target_handles = [
+    Line2D([0],[0], marker=marker_map[t], linestyle="None", markersize=8, label=target_label[t])
+    for t in target_order
+]
+plt.legend(handles=target_handles, title="Endpoint", loc="lower right", frameon=True)
+
+plt.xlabel("Weighted F1-score (mean)")
+plt.ylabel("Balanced accuracy (mean)")
+plt.title("Balanced accuracy vs Weighted F1-score (marker indicates endpoint)")
 plt.tight_layout()
-plt.savefig(outdir / "Fig3b_scatter_targets.png", dpi=300)
-plt.savefig(outdir / "Fig3b_scatter_targets.pdf")
+plt.savefig(outdir / "Fig3c_scatter_bacc_vs_wf1.png", dpi=300)
+plt.savefig(outdir / "Fig3c_scatter_bacc_vs_wf1.pdf")
 plt.close()
 
-print("Wrote improved figures (Fig1b/Fig2b/Fig3b) to outputs/figures/")
+print("Wrote academic-style figures (Fig1c/Fig2c/Fig3c) to outputs/figures/")
