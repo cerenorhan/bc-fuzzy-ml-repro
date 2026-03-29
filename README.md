@@ -9,7 +9,7 @@ The dataset is **not** included due to data-sharing restrictions.
 It can be requested from the **corresponding author** of the associated manuscript.
 
 After obtaining access, place the Excel file at:
-`data/AI_B_CANCER_STUDY_TNZ_Niyazi_CLEANED_STAGE2.xlsx`
+`data/AI_B_CANCER_STUDY.xlsx`
 
 The pipeline expects the sheet name: `ModelReady`.
 Expected feature columns are defined in `src/config.py`.
