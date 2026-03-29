@@ -6,21 +6,21 @@ Predicted Stage labels for unknown cases are provided separately (not treated as
 Reported metrics are mean ± SD across repeats.
 
 ## Best ML model per target (by weighted-F1)
-- **diagnosis**: rf — weighted-F1 0.814 ± 0.071
-- **ihc**: logreg — weighted-F1 0.963 ± 0.013
-- **laterality**: logreg — weighted-F1 0.493 ± 0.038
+- **Diagnosis**: rf — weighted-F1 0.814 ± 0.071
+- **IHC**: logreg — weighted-F1 0.963 ± 0.013
+- **Laterality**: logreg — weighted-F1 0.493 ± 0.038
 - **Stage**: logreg — weighted-F1 0.767 ± 0.000
 
 ## Best ML model per target (by macro-F1)
-- **diagnosis**: rf — macro-F1 0.353 ± 0.063
-- **ihc**: logreg — macro-F1 0.948 ± 0.021
-- **laterality**: logreg — macro-F1 0.402 ± 0.108
+- **Diagnosis**: rf — macro-F1 0.353 ± 0.063
+- **IHC**: logreg — macro-F1 0.948 ± 0.021
+- **Laterality**: logreg — macro-F1 0.402 ± 0.108
 - **Stage**: svm_rbf_bal — macro-F1 0.476 ± 0.033
 
 ## Fuzzy (single-output Wang–Mendel Mamdani) per target (by weighted-F1)
-- **diagnosis**: fuzzy — weighted-F1 0.167 ± 0.068
-- **ihc**: fuzzy — weighted-F1 0.290 ± 0.037
-- **laterality**: fuzzy — weighted-F1 0.326 ± 0.073
+- **Diagnosis**: fuzzy — weighted-F1 0.167 ± 0.068
+- **IHC**: fuzzy — weighted-F1 0.290 ± 0.037
+- **Laterality**: fuzzy — weighted-F1 0.326 ± 0.073
 - **Stage**: fuzzy — weighted-F1 0.129 ± 0.039
 
 ## Notes
