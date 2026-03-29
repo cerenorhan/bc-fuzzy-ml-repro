@@ -7,12 +7,12 @@ from sklearn.preprocessing import StandardScaler
 
 from src.io_utils import load_xy
 
-def normalize_stage2(s: str) -> str:
+def normalize_stage(s: str) -> str:
     s = str(s).strip().replace("–","-").replace("—","-")
     return s
 
-def stage2_binary(series: pd.Series):
-    s = series.astype(str).map(normalize_stage2)
+def stage_binary(series: pd.Series):
+    s = series.astype(str).map(normalize_stage)
     y = pd.Series(np.nan, index=s.index, dtype=float)
     y.loc[s.eq("I-II")] = 0.0
     y.loc[s.eq("III-IV")] = 1.0
@@ -21,7 +21,7 @@ def stage2_binary(series: pd.Series):
 
 def main():
     df, X, _ = load_xy()
-    y, is_unknown = stage2_binary(df["Stage_2grp"])
+    y, is_unknown = stage_binary(df["Stage_2grp"])
 
     y_lp = np.full(len(df), -1, dtype=int)
     known_idx = np.where(~is_unknown.to_numpy())[0]
@@ -39,14 +39,14 @@ def main():
     unk_idx = np.where(is_unknown.to_numpy())[0]
     out = pd.DataFrame({
         "PATIENT ID": df.loc[unk_idx, "PATIENT ID"].values,
-        "Stage2_labelprop": np.where(pred[unk_idx]==0, "I-II", "III-IV"),
+        "Stage_labelprop": np.where(pred[unk_idx]==0, "I-II", "III-IV"),
         "confidence": np.round(conf[unk_idx], 4),
         "high_confidence": conf[unk_idx] >= 0.80
     }).sort_values(["high_confidence","confidence"], ascending=[False,False])
 
     Path("outputs").mkdir(exist_ok=True)
-    out.to_csv("outputs/secondary_labelprop_stage2.csv", index=False)
-    print("Wrote outputs/secondary_labelprop_stage2.csv")
+    out.to_csv("outputs/Stage_unknown_labelprop.csv", index=False)
+    print("Wrote outputs/Stage_unknown_labelprop.csv")
 
 if __name__ == "__main__":
     main()

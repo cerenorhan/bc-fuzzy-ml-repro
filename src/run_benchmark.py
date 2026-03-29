@@ -263,7 +263,7 @@ def main():
         unk_df.to_csv(outdir / "predicted_stage_for_unknown_repeats.csv", index=False)
 
     print("Done. Updated run_benchmark with binary Stage (Unknown treated as missing).")
-    print("- outputs/metrics_test_*_repeats_v2metrics.csv (+ summary) updated")
+    print("- outputs/ML_summary.csv and outputs/Fuzzy_summary.csv updated")
     print("- outputs/Split_info.csv written")
     if len(unk_df):
         print("- outputs/predicted_stage_for_unknown_repeats.csv written (secondary; not used as ground truth)")

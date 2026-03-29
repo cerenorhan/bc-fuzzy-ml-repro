@@ -8,12 +8,12 @@ from sklearn.linear_model import LogisticRegression
 
 from src.io_utils import load_xy
 
-def normalize_stage2(s: str) -> str:
+def normalize_stage(s: str) -> str:
     s = str(s).strip().replace("–","-").replace("—","-")
     return s
 
-def stage2_binary(series: pd.Series):
-    s = series.astype(str).map(normalize_stage2)
+def stage_binary(series: pd.Series):
+    s = series.astype(str).map(normalize_stage)
     y = pd.Series(np.nan, index=s.index, dtype=float)
     y.loc[s.eq("I-II")] = 0.0
     y.loc[s.eq("III-IV")] = 1.0
@@ -22,7 +22,7 @@ def stage2_binary(series: pd.Series):
 
 def main():
     df, X, _ = load_xy()
-    y, is_unknown = stage2_binary(df["Stage_2grp"])
+    y, is_unknown = stage_binary(df["Stage_2grp"])
 
     known = ~is_unknown.to_numpy()
     unk = is_unknown.to_numpy()
@@ -43,14 +43,14 @@ def main():
     thr = 0.80
     out = pd.DataFrame({
         "PATIENT ID": df.loc[unk, "PATIENT ID"].values,
-        "Stage2_pseudolabel": np.where(pred==0, "I-II", "III-IV"),
+        "Stage_pseudolabel": np.where(pred==0, "I-II", "III-IV"),
         "confidence": np.round(conf, 4),
         "high_confidence": conf >= thr
     }).sort_values(["high_confidence","confidence"], ascending=[False,False])
 
     Path("outputs").mkdir(exist_ok=True)
-    out.to_csv("outputs/secondary_selftrain_stage2_pseudolabels.csv", index=False)
-    print("Wrote outputs/secondary_selftrain_stage2_pseudolabels.csv")
+    out.to_csv("outputs/Stage_unknown_selftraining.csv", index=False)
+    print("Wrote outputs/Stage_unknown_selftraining.csv")
 
 if __name__ == "__main__":
     main()
