@@ -1,3 +1,29 @@
 # Results summary (repeated stratified 80/20 splits)
-\nEvaluation used 5 repeated 80/20 splits (seeds: 7, 13, 21, 42, 99).\nStage was evaluated as a binary endpoint (I–II vs III–IV). 'Unknown' Stage values were treated as missing and excluded from Stage training and evaluation.\nPredicted Stage labels for unknown cases are provided separately (not treated as ground truth).\nReported metrics are mean ± SD across repeats.
-\n## Best ML model per target (by weighted-F1)\n- **diagnosis**: rf — weighted-F1 0.814 ± 0.071\n- **ihc**: logreg — weighted-F1 0.963 ± 0.013\n- **laterality**: logreg — weighted-F1 0.493 ± 0.038\n- **Stage**: logreg — weighted-F1 0.767 ± 0.000\n\n## Best ML model per target (by macro-F1)\n- **diagnosis**: rf — macro-F1 0.353 ± 0.063\n- **ihc**: logreg — macro-F1 0.948 ± 0.021\n- **laterality**: logreg — macro-F1 0.402 ± 0.108\n- **Stage**: svm_rbf_bal — macro-F1 0.476 ± 0.033\n\n## Fuzzy (single-output Wang–Mendel Mamdani) per target (by weighted-F1)\n- **diagnosis**: fuzzy — weighted-F1 0.167 ± 0.068\n- **ihc**: fuzzy — weighted-F1 0.290 ± 0.037\n- **laterality**: fuzzy — weighted-F1 0.326 ± 0.073\n- **Stage**: fuzzy — weighted-F1 0.129 ± 0.039\n\n## Notes\n- Macro-F1 and balanced accuracy are recommended for imbalanced targets, since accuracy/weighted-F1 can be dominated by the majority class.\n- Fuzzy rules were derived from data using Wang–Mendel extraction; the original hand-crafted rule base was not available.\n\n
+
+Evaluation used 5 repeated 80/20 splits (seeds: 7, 13, 21, 42, 99).
+Stage was evaluated as a binary endpoint (I–II vs III–IV). 'Unknown' Stage values were treated as missing and excluded from Stage training and evaluation.
+Predicted Stage labels for unknown cases are provided separately (not treated as ground truth).
+Reported metrics are mean ± SD across repeats.
+
+## Best ML model per target (by weighted-F1)
+- **diagnosis**: rf — weighted-F1 0.814 ± 0.071
+- **ihc**: logreg — weighted-F1 0.963 ± 0.013
+- **laterality**: logreg — weighted-F1 0.493 ± 0.038
+- **Stage**: logreg — weighted-F1 0.767 ± 0.000
+
+## Best ML model per target (by macro-F1)
+- **diagnosis**: rf — macro-F1 0.353 ± 0.063
+- **ihc**: logreg — macro-F1 0.948 ± 0.021
+- **laterality**: logreg — macro-F1 0.402 ± 0.108
+- **Stage**: svm_rbf_bal — macro-F1 0.476 ± 0.033
+
+## Fuzzy (single-output Wang–Mendel Mamdani) per target (by weighted-F1)
+- **diagnosis**: fuzzy — weighted-F1 0.167 ± 0.068
+- **ihc**: fuzzy — weighted-F1 0.290 ± 0.037
+- **laterality**: fuzzy — weighted-F1 0.326 ± 0.073
+- **Stage**: fuzzy — weighted-F1 0.129 ± 0.039
+
+## Notes
+- Macro-F1 and balanced accuracy are recommended for imbalanced targets, since accuracy/weighted-F1 can be dominated by the majority class.
+- Fuzzy rules were derived from data using Wang–Mendel extraction; the original hand-crafted rule base was not available.
+
