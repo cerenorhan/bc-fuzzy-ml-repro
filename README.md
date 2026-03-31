@@ -1,8 +1,11 @@
-# Benchmarking interpretable fuzzy logic and machine-learning approaches for breast cancer classification in Tanzanian women
+# Benchmarking expert-rule fuzzy, data-driven fuzzy, and machine-learning models for breast cancer classification in Tanzanian women
 
 This repository reproduces and benchmarks a breast-cancer endpoint prediction pipeline using:
-- **Fuzzy logic**: Mamdani inference with data-driven **Wang–Mendel rule extraction**.
+
+- **Expert-rule fuzzy logic**: a multi-output Mamdani inference system based on predefined interpretable clinical rules.
+- **Data-driven fuzzy logic**: Mamdani inference with data-driven **Wang–Mendel rule extraction**.
 - **Machine learning baselines**: Logistic Regression, SVM (RBF), Random Forest, Gradient Boosting (scikit-learn).
+
 
 ## Data availability
 The dataset is **not** included due to data-sharing restrictions.
@@ -23,62 +26,57 @@ pip install -r requirements.txt
 
 ## Figure organization for manuscript and supplementary materials
 
-To preserve computational reproducibility, the original figure-generation code and its native output filenames were kept unchanged.  
-The benchmark pipeline therefore continues to generate the original figure files under `outputs/figures/`.
+To preserve computational reproducibility, the original benchmark workflow and native output filenames were kept intact wherever possible.  
+The manuscript, however, follows a curated figure order built on top of those reproducible outputs.
 
-For manuscript preparation, additional organized copies of the final figures were created under:
+This study compares three model families:
 
-- `outputs/figures/main/`
-- `outputs/figures/supplementary/`
-- `outputs/figures/panel_sources/`
-
-This structure was introduced without changing the underlying benchmark logic, analysis workflow, or figure-generation code. The goal is to keep the original pipeline reproducible while also providing a clean manuscript-oriented presentation layer.
+1. **Expert-rule fuzzy**
+2. **Data-driven fuzzy**
+3. **Machine-learning baselines**
 
 ### Main manuscript figures
 
-The current manuscript figure order is:
+The current main-text figure order is:
 
-1. `Fig01_workflow_schematic`  
-   Workflow schematic used in the Materials and Methods section.
+1. `main/Fig01_workflow_schematic`  
+   Workflow overview of preprocessing, repeated splits, expert-rule fuzzy, data-driven fuzzy, machine-learning models, evaluation, and unknown-stage secondary analyses.
 
-2. `Fig02_class_distribution`  
-   Class distribution overview for Stage, Diagnosis, Laterality, and IHC.
+2. `main/Fig02_class_distribution`  
+   Class distributions of the four modeled endpoints: Stage, Diagnosis, Laterality, and IHC.
 
-3. `Fig03_metric_distributions`  
-   Fold/seed-wise performance distributions across repeated train/test splits.
+3. `main/Fig03_performance_heatmap`  
+   Overall model performance heatmap based on mean weighted F1-score across repeated splits.
 
-4. `Fig04_confusion_matrices_combined`  
-   Combined confusion-matrix panel comparing fuzzy logic and the best-performing machine-learning model across targets.
+4. `main/Fig04_expert_data_ml_comparison`  
+   Per-endpoint comparison of expert-rule fuzzy, data-driven fuzzy, and the best-performing machine-learning model.
 
-5. `Fig05_stage_feature_importance`  
-   Feature-importance summary for the Stage classification task.
+5. `main/Fig05_metric_distributions`  
+   Fold/seed-wise weighted F1-score distributions across repeated train/test splits.
+
+6. `main/Fig06_confusion_matrices`  
+   Confusion-matrix comparison of data-driven fuzzy, expert-rule fuzzy, and the best-performing machine-learning model for each endpoint.
+
+7. `main/Fig07_unknown_stage_methods`  
+   Secondary analyses for Unknown-Stage samples, including initial prediction, self-training, and label propagation perspectives.
+
+8. `main/Fig08_feature_importance`  
+   Feature-importance summary for Stage classification models.
 
 ### Supplementary figures
 
 The current supplementary figure set is:
 
-- `FigS01_unknown_stage_methods`
-- `FigS02_method_agreement_heatmap`
-- `FigS03_split_overview`
-- `FigS04_stage_roc`
-- `FigS05_stage_precision_recall`
-- `FigS06_correlation_heatmap`
-- `FigS07_agreement_lollipop`
-- `FigS08_model_scatter`
-
-### Panel source figures
-
-To retain transparency for multi-panel figure assembly, source panels for the combined confusion-matrix figure are also stored separately:
-
-- `Fig04_panel_source_diagnosis`
-- `Fig04_panel_source_ihc`
-- `Fig04_panel_source_laterality`
-- `Fig04_panel_source_stage`
-
-These files are retained as source components for figure assembly and review, while the combined panel remains the main manuscript version.
+- `supplementary/FigS01_split_overview`
+- `supplementary/FigS02_scatter_comparison`
+- `supplementary/FigS03_stage_roc`
+- `supplementary/FigS04_stage_pr_curve`
+- `supplementary/FigS05_correlation_heatmap`
+- `supplementary/FigS06_method_agreement_heatmap`
+- `supplementary/FigS07_agreement_lollipop`
 
 ### Reproducibility note
 
-The directories `main/`, `supplementary/`, and `panel_sources/` reflect manuscript-oriented curation only.  
-They do not replace the original benchmark outputs and do not alter the reproducible workflow. Re-running the pipeline still regenerates the original output files with their native names.
+The manuscript-oriented figure numbering above is a presentation layer and does not redefine the internal benchmark workflow.  
+Re-running the benchmark regenerates the analysis outputs, while the manuscript uses the curated figure order listed here.
 
