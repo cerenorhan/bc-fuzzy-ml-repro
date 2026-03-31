@@ -1,0 +1,6 @@
+seed,n_total,n_known_stage,n_unknown_stage,n_train_total,n_test_total,n_train_known_stage,n_test_known_stage,n_test_unknown_stage
+7,260,247,13,207,53,197,50,3
+13,260,247,13,207,53,197,50,3
+21,260,247,13,207,53,197,50,3
+42,260,247,13,207,53,197,50,3
+99,260,247,13,207,53,197,50,3
