@@ -1,0 +1,5 @@
+step	file	n_samples	n_variants
+Raw joint VCF	results/germline/joint/local_wes_germline_only.raw.vcf.gz	31	549436
+PASS variants	results/germline/filtered/local_wes_germline_only.pass.vcf.gz	31	513529
+PASS biallelic SNPs	results/germline/filtered/local_wes_germline_only.pass.biallelic_snps.vcf.gz	31	450326
+PASS autosomal biallelic SNPs	results/germline/filtered/local_wes_germline_only.pass.biallelic_snps.autosomal.vcf.gz	31	441867

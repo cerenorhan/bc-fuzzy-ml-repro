@@ -1,21 +1,23 @@
-# Benchmarking expert-rule fuzzy, data-driven fuzzy, and machine-learning models for breast cancer classification in Tanzanian women
+# Interpretable Clinical AI Benchmarking and Multilayer Genomic Contextualization in Tanzanian Breast Cancer
 
-This repository reproduces and benchmarks a breast-cancer endpoint prediction pipeline using:
+This repository contains reproducibility materials for the clinical AI benchmarking and independent molecular contextualization components of the study.
 
 - **Expert-rule fuzzy logic**: a multi-output Mamdani inference system based on predefined interpretable clinical rules.
 - **Data-driven fuzzy logic**: Mamdani inference with data-driven **Wang–Mendel rule extraction**.
 - **Machine learning baselines**: Logistic Regression, SVM (RBF), Random Forest, Gradient Boosting (scikit-learn).
 
+The molecular analyses are independent contextual layers and were not used as input features for the clinical fuzzy-logic or machine-learning models.
+
 
 ## Data availability
-The dataset is **not** included due to data-sharing restrictions.
-It can be requested from the **corresponding author** of the associated manuscript.
 
-After obtaining access, place the Excel file at:
-`data/AI_B_CANCER_STUDY.xlsx`
+The local clinical dataset and local patient-level sequencing data are not distributed in this public repository because of data-sharing restrictions.
 
-The pipeline expects the sheet name: `ModelReady`.
-Expected feature columns are defined in `src/config.py`.
+The clinical dataset may be requested from the corresponding author of the associated manuscript, subject to applicable ethical and institutional requirements. After obtaining access, place the Excel file at `data/AI_B_CANCER_STUDY.xlsx`. The pipeline expects the sheet name `ModelReady`, with feature definitions provided in `src/config.py`.
+
+Public molecular datasets used in the study should be retrieved from their original repositories using the accession information documented under `molecular/`.
+
+Selected aggregate and public-data-derived manuscript outputs are mirrored in `molecular/manuscript_outputs/`. Local sample-linked supplementary tables are intentionally not mirrored publicly.
 
 ## Quickstart (WSL2 / Ubuntu)
 ```bash
@@ -23,6 +25,15 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
+```
+
+## Molecular analyses
+
+The molecular component includes local non-cancer germline WES, local breast-cancer tumour-only WES, public paired tumour-normal WES from PRJNA913947, public RNA-seq from GSE142258, and cross-layer genomic prioritization.
+
+Because matched normal samples were not available for the local tumour WES cohort, variants from that layer are treated as tumour-associated candidate variants rather than definitively somatic or pathogenic variants.
+
+Detailed molecular workflow documentation, configuration, software versions, and manuscript-linked outputs are provided in `molecular/README.md`.
 
 ## Figure organization for manuscript and supplementary materials
 

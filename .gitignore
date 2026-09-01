@@ -16,3 +16,58 @@ results_package.zip
 results_package_UPDATED.zip
 results_package
 *.zip
+
+# --------------------------------------------------
+# Molecular omics - raw/large/intermediate files
+# --------------------------------------------------
+
+# Sequencing reads
+*.fastq
+*.fastq.gz
+*.fq
+*.fq.gz
+*.sra
+
+# Alignments
+*.sam
+*.bam
+*.bai
+*.cram
+*.crai
+
+# Large variant calling intermediates
+*.g.vcf
+*.g.vcf.gz
+*.bcf
+*.bcf.csi
+*.tbi
+*.csi
+
+# Temporary / intermediate work directories
+tmp/
+temp/
+work/
+cache/
+
+# Molecular raw / intermediate data directories
+molecular/**/data/raw/
+molecular/**/data/trimmed/
+molecular/**/data/aligned/
+molecular/**/data/public/
+
+# Reference resources
+molecular/**/reference/
+molecular/**/references/
+
+# Tool-specific temporary files
+*.tmp
+*.metrics.tmp
+
+# Local machine configuration
+molecular/config/config.local.sh
+
+# Restricted manuscript supplementary tables - local sample-linked data
+molecular/manuscript_outputs/supplementary_data/Supplementary_Data_13_*
+molecular/manuscript_outputs/supplementary_data/Supplementary_Data_16_*
+molecular/manuscript_outputs/supplementary_data/Supplementary_Data_17_*
+molecular/manuscript_outputs/supplementary_data/Supplementary_Data_18_*
